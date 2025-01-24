@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>First Come First Serve</title>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #F5F9E9; 
+    color: #2C3E50; 
+}
+
+header {
+    background-color: #D6EAF8; 
+    color: #2C3E50; 
+    padding: 15px 20px;
+    text-align: center;
+    border-bottom: 4px solid #34495E; 
+}
+
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 25px;
+    background: #FADBD8; 
+    border-radius: 10px; 
+    
+}
+
+.input-group {
+    margin: 15px 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 15px; 
+}
+    
+
+.input-group input {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #34495E; 
+    border-radius: 8px; 
+    background-color: #FFFFFF; 
+}
+
+.btn {
+    background-color: #FF8383; 
+    color: white;
+    border: none;
+    padding: 12px 18px;
+    cursor: pointer;
+    border-radius: 8px; 
+    transition: background-color 0.3s ease; 
+}
+
+.btn:hover {
+    background-color: #E57373; 
+}
+
+.output {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #D6EAF8; 
+    border-left: 5px solid #34495E; 
+    border-radius: 5px; 
+}
+
+.gantt-chart {
+    display: flex;
+    margin-top: 20px;
+    border: 4px solid #34495E; 
+    border-radius: 10px; 
+    overflow: hidden;
+}
+
+.gantt-chart div {
+    text-align: center;
+    padding: 15px 0;
+    color: white;
+    font-weight: bold;
+    background-color: #FF8383; 
+    flex: 1; 
+    border-right: 1px solid #E1EACD; 
+}
+
+.gantt-chart div:last-child {
+    border-right: none; 
+} 
+    </style>
+</head>
+
+<body>
+    
+    <header>
+        <h1>First Come First Serve (FCFS) Scheduling</h1>
+    </header>
+    <div class="container">
+        <h2>What is FCFS?</h2>
+        <p>First Come, First Serve (FCFS) is one of the simplest types of CPU scheduling algorithms. It is exactly what it sounds like: processes are attended to in the order in which they arrive in the ready queue, much like customers lining up at a grocery store.</p>
+        <h2>How it works?</h2>
+        <p>FCFS Scheduling algorithm automatically executes the queued processes and requests in the order of their arrival. It allocates the job that first arrived in the queue to the CPU, then allocates the second one, and so on.</p>
+        <h2>Add Processes</h2>
+        <div id="input-section">
+            <div class="input-group">
+                <input type="text" id="process-name" placeholder="Process Name">
+                <input type="number" id="burst-time" placeholder="Burst Time" min="1">
+                <button class="btn" onclick="addProcess()">Add Process</button>
+            </div>
+        </div>
+        <h2>Processes</h2>
+        <div id="process-list"></div>
+        <button class="btn" onclick="simulateFCFS()">Simulate FCFS</button>
+        <div id="output" class="output"></div>
+        <div id="gantt-chart" class="gantt-chart"></div>
+    </div>
+    <script>
+        const processes = [];
+
+        function addProcess() {
+            const name = document.getElementById('process-name').value.trim();
+            const burstTime = parseInt(document.getElementById('burst-time').value);
+
+            if (!name || isNaN(burstTime) || burstTime <= 0) {
+                alert('Please enter valid process details.');
+                return;
+            }
+
+            processes.push({ name, burstTime });
+            document.getElementById('process-name').value = '';
+            document.getElementById('burst-time').value = '';
+            updateProcessList();
+        }
+
+        function updateProcessList() {
+            const processList = document.getElementById('process-list');
+            processList.innerHTML = '';
+
+            processes.forEach((process) => {
+                const processDiv = document.createElement('div');
+                processDiv.className = 'process';
+                processDiv.innerHTML = `<span>${process.name}</span> <span>Burst Time: ${process.burstTime}</span>`;
+                processList.appendChild(processDiv);
+            });
+        }
+
+        function simulateFCFS() {
+            if (processes.length === 0) {
+                alert('No processes to simulate. Please add processes.');
+                return;
+            }
+
+            let currentTime = 0;
+            let output = '<h3>FCFS Execution Order:</h3>';
+            let ganttHTML = '';
+
+            processes.forEach(process => {
+                output += `<p>${process.name} executes from ${currentTime} to ${currentTime + process.burstTime}</p>`;
+                ganttHTML += `<div style="flex: ${process.burstTime}; background-color: ${generateColor(process.name)};">${process.name}</div>`;
+                currentTime += process.burstTime;
+            });
+
+            document.getElementById('output').innerHTML = output;
+            document.getElementById('gantt-chart').innerHTML = ganttHTML;
+        }
+
+        function generateColor(processName) {
+            const hash = processName.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            const hue = hash % 360;
+            return `hsl(${hue}, 70%, 50%)`;
+        }
+    </script>
+</body>
+</html>
